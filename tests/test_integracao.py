@@ -65,3 +65,23 @@ def test_fluxo_tentativa_de_compra_com_estoque_insuficiente():
     carrinho = limpar_carrinho(carrinho)
     assert len(carrinho) == 0
     assert consultar_estoque(estoque, "Leite Integral") == 2
+
+def test_fluxo_desistencia_de_item_no_caixa():
+    """Cenário 4: Cliente adiciona múltiplos itens, mas desiste de um deles 
+    antes de finalizar. O total deve recalcular corretamente apenas para os itens restantes."""
+    carrinho = []
+    
+    carrinho = adicionar_item(carrinho, {"nome": "Sabão em Pó", "preco": 15.0, "quantidade": 2})
+    carrinho = adicionar_item(carrinho, {"nome": "Biscoito", "preco": 4.50, "quantidade": 1})
+    
+    # Cliente desiste do biscoito
+    carrinho = remover_item(carrinho, "Biscoito")
+    
+    # O total deve considerar apenas o Sabão em Pó (2x15 = 30)
+    total_final = calcular_total(carrinho)
+    assert total_final == 30.0
+    
+    # Recibo não deve conter o item removido
+    recibo = gerar_recibo(carrinho)
+    assert "Sabão em Pó" in recibo
+    assert "Biscoito" not in recibo
