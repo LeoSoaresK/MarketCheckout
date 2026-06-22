@@ -60,3 +60,54 @@ def test_aplicar_desconto_percentual_valido():
 def test_aplicar_desconto_invalido_lanca_erro():
     with pytest.raises(ValueError, match="Desconto deve ser entre 0 e 100"):
         aplicar_desconto(100.0, 110)
+
+def test_pagamento_exato_retorna_troco_zero():
+    assert processar_pagamento(50.0, 50.0) == 0.0
+
+def test_pagamento_com_dinheiro_a_mais_retorna_troco_correto():
+    assert processar_pagamento(50.0, 70.0) == 20.0
+
+def test_pagamento_com_valor_insuficiente_lanca_erro():
+    with pytest.raises(ValueError, match="Valor insuficiente para pagamento"):
+        processar_pagamento(50.0, 40.0)
+
+def test_pagamento_com_valor_negativo_lanca_erro():
+    with pytest.raises(ValueError, match="O valor pago não pode ser negativo"):
+        processar_pagamento(50.0, -10.0)
+
+def test_limpar_carrinho_com_itens():
+    carrinho = [{"nome": "La-Yu Chili Oil", "preco": 20.0, "quantidade": 2}]
+    atualizado = limpar_carrinho(carrinho)
+    assert len(atualizado) == 0
+
+def test_limpar_carrinho_ja_vazio():
+    carrinho = []
+    atualizado = limpar_carrinho(carrinho)
+    assert len(atualizado) == 0
+
+def test_buscar_item_existente_no_carrinho():
+    carrinho = [
+        {"nome": "Crunchy Garlic S&B", "preco": 35.0, "quantidade": 1},
+        {"nome": "Arroz", "preco": 25.0, "quantidade": 2}
+    ]
+    item = buscar_item(carrinho, "Crunchy Garlic S&B")
+    assert item is not None
+    assert item["preco"] == 35.0
+
+def test_buscar_item_inexistente_retorna_none():
+    carrinho = [{"nome": "Arroz", "preco": 25.0, "quantidade": 2}]
+    item = buscar_item(carrinho, "Feijão")
+    assert item is None
+
+def test_gerar_recibo_carrinho_vazio():
+    carrinho = []
+    assert gerar_recibo(carrinho) == "Carrinho vazio"
+
+def test_gerar_recibo_lista_nomes_dos_produtos():
+    carrinho = [
+        {"nome": "Crunchy Garlic S&B", "preco": 35.0, "quantidade": 1},
+        {"nome": "La-Yu Chili Oil", "preco": 20.0, "quantidade": 1}
+    ]
+    recibo = gerar_recibo(carrinho)
+    assert "Crunchy Garlic S&B" in recibo
+    assert "La-Yu Chili Oil" in recibo
