@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Mercado</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Mercado Checkout</h1>
+    </header>
+
+    <main class="container">
+        <section class="produtos-section">
+            <h2>Prateleira de Produtos</h2>
+            <div class="lista-produtos">
+                {% for produto in produtos %}
+                <div class="produto-card">
+                    <span><strong>{{ produto.nome }}</strong> - R$ {{ "%.2f"|format(produto.preco) }}</span>
+                    <form action="/adicionar" method="POST">
+                        <input type="hidden" name="nome" value="{{ produto.nome }}">
+                        <input type="hidden" name="preco" value="{{ produto.preco }}">
+                        <button type="submit" class="btn-add">+ Passar no Caixa</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="carrinho-section">
+            <h2>Itens no Caixa</h2>
+            <div class="Cupom">
+                {% if not carrinho %}
+                    <p class="vazio">Nenhum produto passado ainda.</p>
+                {% else %}
+                    <ul>
+                        {% for item in carrinho %}
+                        <li>{{ item.quantidade }}x {{ item.nome }} — R$ {{ "%.2f"|format(item.preco * item.quantidade) }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="total-box">
+                <h3>Total: R$ {{ "%.2f"|format(total) }}</h3>
+            </div>
+
+            {% if carrinho %}
+            <form action="/limpar" method="POST">
+                <button type="submit" class="btn-limpar">Cancelar Compra (Limpar)</button>
+            </form>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>
