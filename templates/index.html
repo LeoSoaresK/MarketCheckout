@@ -3,25 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Mercado</title>
+    <title>Ponto de Caixa</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
-        <h1>Mercado Checkout</h1>
+        <h1>🛒 Ponto de Caixa</h1>
     </header>
+
+    <div class="mensagens-alerta">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alerta alerta-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
 
     <main class="container">
         <section class="produtos-section">
-            <h2>Prateleira de Produtos</h2>
+            <h2>Produtos Disponíveis</h2>
             <div class="lista-produtos">
                 {% for produto in produtos %}
                 <div class="produto-card">
-                    <span><strong>{{ produto.nome }}</strong> - R$ {{ "%.2f"|format(produto.preco) }}</span>
+                    <span class="nome-produto">{{ produto.nome }}</span>
+                    <span class="preco-produto">R$ {{ "%.2f"|format(produto.preco) }}</span>
                     <form action="/adicionar" method="POST">
                         <input type="hidden" name="nome" value="{{ produto.nome }}">
                         <input type="hidden" name="preco" value="{{ produto.preco }}">
-                        <button type="submit" class="btn-add">+ Passar no Caixa</button>
+                        <button type="submit" class="btn-add">Adicionar</button>
                     </form>
                 </div>
                 {% endfor %}
@@ -29,27 +40,38 @@
         </section>
 
         <section class="carrinho-section">
-            <h2>Itens no Caixa</h2>
-            <div class="Cupom">
+            <h2>Cupom Fiscal</h2>
+            <div class="cupom">
                 {% if not carrinho %}
-                    <p class="vazio">Nenhum produto passado ainda.</p>
+                    <p class="vazio">Caixa livre. Passe um produto.</p>
                 {% else %}
-                    <ul>
+                    <ul class="lista-cupom">
                         {% for item in carrinho %}
-                        <li>{{ item.quantidade }}x {{ item.nome }} — R$ {{ "%.2f"|format(item.preco * item.quantidade) }}</li>
+                        <li>
+                            <span>{{ item.quantidade }}x {{ item.nome }}</span>
+                            <span>R$ {{ "%.2f"|format(item.preco * item.quantidade) }}</span>
+                        </li>
                         {% endfor %}
                     </ul>
                 {% endif %}
             </div>
             
             <div class="total-box">
-                <h3>Total: R$ {{ "%.2f"|format(total) }}</h3>
+                <h3>Total a Pagar: <span>R$ {{ "%.2f"|format(total) }}</span></h3>
             </div>
 
             {% if carrinho %}
-            <form action="/limpar" method="POST">
-                <button type="submit" class="btn-limpar">Cancelar Compra (Limpar)</button>
-            </form>
+            <div class="pagamento-box">
+                <form action="/pagar" method="POST" class="form-pagamento">
+                    <label for="valor_pago">Dinheiro Recebido (R$):</label>
+                    <input type="number" step="0.01" name="valor_pago" id="valor_pago" required placeholder="Ex: 50.00">
+                    <button type="submit" class="btn-pagar">💳 Finalizar Compra</button>
+                </form>
+
+                <form action="/limpar" method="POST">
+                    <button type="submit" class="btn-limpar">🗑️ Cancelar Compra</button>
+                </form>
+            </div>
             {% endif %}
         </section>
     </main>
