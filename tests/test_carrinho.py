@@ -1,7 +1,8 @@
 import pytest
 from src.carrinho import (
     calcular_total, adicionar_item, remover_item, aplicar_desconto,
-    processar_pagamento, limpar_carrinho, gerar_recibo, buscar_item
+    processar_pagamento, limpar_carrinho, gerar_recibo, buscar_item,
+    # consultar_estoque, baixar_estoque, repor_estoque
 )
 
 def test_calcular_total_carrinho_vazio():
@@ -114,3 +115,51 @@ def test_gerar_recibo_lista_nomes_dos_produtos():
     recibo = gerar_recibo(carrinho)
     assert "Crunchy Garlic S&B" in recibo
     assert "La-Yu Chili Oil" in recibo
+
+def test_consultar_estoque_produto_existente():
+    estoque = {"Whey Protein Isolado": 5}
+    assert consultar_estoque(estoque, "Whey Protein Isolado") == 5
+
+def test_consultar_estoque_produto_inexistente_retorna_zero():
+    estoque = {"Whey Protein Isolado": 5}
+    assert consultar_estoque(estoque, "Corda de Guitarra 0.9") == 0
+
+def test_baixar_estoque_com_sucesso():
+    estoque = {"Whey Protein Isolado": 10}
+    baixar_estoque(estoque, "Whey Protein Isolado", 2)
+    assert estoque["Whey Protein Isolado"] == 8
+
+def test_baixar_estoque_quantidade_exata_zera_produto():
+    estoque = {"Corda de Guitarra 0.9": 3}
+    baixar_estoque(estoque, "Corda de Guitarra 0.9", 3)
+    assert estoque["Corda de Guitarra 0.9"] == 0
+
+def test_baixar_estoque_insuficiente_lanca_erro():
+    estoque = {"Whey Protein Isolado": 2}
+    with pytest.raises(ValueError, match="Estoque insuficiente"):
+        baixar_estoque(estoque, "Whey Protein Isolado", 5)
+
+def test_baixar_estoque_produto_inexistente_lanca_erro():
+    estoque = {"Corda de Guitarra 0.9": 5}
+    with pytest.raises(KeyError, match="Produto não cadastrado no estoque"):
+        baixar_estoque(estoque, "Toldo Náutico", 1)
+
+def test_baixar_estoque_quantidade_negativa_lanca_erro():
+    estoque = {"Whey Protein Isolado": 5}
+    with pytest.raises(ValueError, match="Quantidade a baixar deve ser maior que zero"):
+        baixar_estoque(estoque, "Whey Protein Isolado", -1)
+
+def test_repor_estoque_produto_existente():
+    estoque = {"Corda de Guitarra 0.9": 2}
+    repor_estoque(estoque, "Corda de Guitarra 0.9", 3)
+    assert estoque["Corda de Guitarra 0.9"] == 5
+
+def test_repor_estoque_novo_produto():
+    estoque = {}
+    repor_estoque(estoque, "Transformador de Voltagem", 10)
+    assert estoque["Transformador de Voltagem"] == 10
+
+def test_repor_estoque_quantidade_negativa_lanca_erro():
+    estoque = {"Corda de Guitarra 0.9": 5}
+    with pytest.raises(ValueError, match="Quantidade a repor deve ser maior que zero"):
+        repor_estoque(estoque, "Corda de Guitarra 0.9", -2)
