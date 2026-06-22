@@ -47,3 +47,21 @@ def test_fluxo_compra_com_desconto_e_troco():
     # Cliente paga com uma nota de R$ 50.00
     troco = processar_pagamento(total_com_desconto, 50.0)
     assert troco == 14.0
+
+def test_fluxo_tentativa_de_compra_com_estoque_insuficiente():
+    """Cenário 3: Cliente tenta comprar mais unidades do que o disponível. 
+    O sistema barra, o estoque permanece intacto e o carrinho é cancelado."""
+    carrinho = []
+    estoque = {"Leite Integral": 2}
+    
+    item_desejado = {"nome": "Leite Integral", "preco": 5.50, "quantidade": 3}
+    
+    # Integração entre verificação de estoque e tentativa de baixa
+    with pytest.raises(ValueError, match="Estoque insuficiente"):
+        if consultar_estoque(estoque, item_desejado["nome"]) < item_desejado["quantidade"]:
+            baixar_estoque(estoque, item_desejado["nome"], item_desejado["quantidade"])
+            
+    # Como a operação falhou por falta de estoque, o carrinho é limpo (compra cancelada)
+    carrinho = limpar_carrinho(carrinho)
+    assert len(carrinho) == 0
+    assert consultar_estoque(estoque, "Leite Integral") == 2
