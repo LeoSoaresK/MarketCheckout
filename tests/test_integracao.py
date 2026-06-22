@@ -85,3 +85,22 @@ def test_fluxo_desistencia_de_item_no_caixa():
     recibo = gerar_recibo(carrinho)
     assert "Sabão em Pó" in recibo
     assert "Biscoito" not in recibo
+
+def test_fluxo_fechamento_de_caixa_e_impressao_de_recibo():
+    """Cenário 5: Validação da estrutura de texto do recibo gerado após o 
+    cálculo do total e esvaziamento correto do carrinho pós-venda."""
+    carrinho = []
+    carrinho = adicionar_item(carrinho, {"nome": "Chocolate Amargo", "preco": 8.0, "quantidade": 1})
+    
+    total = calcular_total(carrinho)
+    processar_pagamento(total, 10.0)
+    
+    recibo = gerar_recibo(carrinho)
+    
+    # O recibo deve conter o cabeçalho e os detalhes de formatação do preço
+    assert "--- RECIBO ---" in recibo
+    assert "1x Chocolate Amargo - R$ 8.0" in recibo
+    
+    # Finaliza o atendimento limpando o carrinho para o próximo cliente
+    carrinho = limpar_carrinho(carrinho)
+    assert len(carrinho) == 0
