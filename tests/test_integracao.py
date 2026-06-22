@@ -30,3 +30,20 @@ def test_fluxo_compra_completa_com_sucesso():
     # 5. Verifica se o estoque refletiu a venda corretamente
     assert consultar_estoque(estoque, "Arroz") == 8
     assert consultar_estoque(estoque, "Feijão") == 4
+
+def test_fluxo_compra_com_desconto_e_troco():
+    """Cenário 2: Compra de um item de valor alto, aplicação de cupom de desconto 
+    e pagamento com dinheiro gerando troco."""
+    carrinho = []
+    carrinho = adicionar_item(carrinho, {"nome": "Azeite Extra Virgem", "preco": 40.0, "quantidade": 1})
+    
+    # Calcula total inicial
+    total_inicial = calcular_total(carrinho)
+    
+    # Aplica um cupom de 10% de desconto (40.0 - 10% = 36.0)
+    total_com_desconto = aplicar_desconto(total_inicial, 10)
+    assert total_com_desconto == 36.0
+    
+    # Cliente paga com uma nota de R$ 50.00
+    troco = processar_pagamento(total_com_desconto, 50.0)
+    assert troco == 14.0
