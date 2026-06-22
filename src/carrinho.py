@@ -58,3 +58,27 @@ def gerar_recibo(carrinho):
     for item in carrinho:
         linhas_recibo.append(f"{item['quantidade']}x {item['nome']} - R$ {item['preco']}")
     return "\n".join(linhas_recibo)
+
+def consultar_estoque(estoque, produto):
+    return estoque.get(produto, 0)
+
+def baixar_estoque(estoque, produto, quantidade):
+    if quantidade <= 0:
+        raise ValueError("Quantidade a baixar deve ser maior que zero")
+    if produto not in estoque:
+        raise KeyError("Produto não cadastrado no estoque")
+    if estoque[produto] < quantidade:
+        raise ValueError("Estoque insuficiente")
+    
+    estoque[produto] -= quantidade
+    return estoque
+
+def repor_estoque(estoque, produto, quantidade):
+    if quantidade <= 0:
+        raise ValueError("Quantidade a repor deve ser maior que zero")
+    
+    if produto in estoque:
+        estoque[produto] += quantidade
+    else:
+        estoque[produto] = quantidade
+    return estoque
