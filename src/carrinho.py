@@ -32,3 +32,29 @@ def aplicar_desconto(total, percentual):
         
     desconto = total * (percentual / 100)
     return total - desconto
+
+def processar_pagamento(total_compra, valor_pago):
+    if valor_pago < 0:
+        raise ValueError("O valor pago não pode ser negativo")
+    if valor_pago < total_compra:
+        raise ValueError("Valor insuficiente para pagamento")
+    return valor_pago - total_compra
+
+def limpar_carrinho(carrinho):
+    carrinho.clear()
+    return carrinho
+
+def buscar_item(carrinho, nome_item):
+    for item in carrinho:
+        if item["nome"] == nome_item:
+            return item
+    return None
+
+def gerar_recibo(carrinho):
+    if not carrinho:
+        return "Carrinho vazio"
+    
+    linhas_recibo = ["--- RECIBO ---"]
+    for item in carrinho:
+        linhas_recibo.append(f"{item['quantidade']}x {item['nome']} - R$ {item['preco']}")
+    return "\n".join(linhas_recibo)
