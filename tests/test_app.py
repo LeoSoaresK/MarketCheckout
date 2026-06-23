@@ -83,6 +83,19 @@ def test_desconto_invalido_mostra_erro(client):
     assert "Desconto deve ser entre 0 e 100" in resposta.get_data(as_text=True)
 
 
+def test_repor_estoque_valido_incrementa_quantidade(client):
+    client.post('/repor', data={'nome': 'Arroz 5kg', 'quantidade': '5'})
+
+    assert app_module.estoque_atual['Arroz 5kg'] == 15
+
+
+def test_repor_estoque_quantidade_invalida_mostra_erro(client):
+    resposta = client.post('/repor', data={'nome': 'Arroz 5kg', 'quantidade': '-3'}, follow_redirects=True)
+
+    assert app_module.estoque_atual['Arroz 5kg'] == 10
+    assert "Quantidade a repor deve ser maior que zero" in resposta.get_data(as_text=True)
+
+
 def test_limpar_esvazia_carrinho_e_reseta_desconto(client):
     client.post('/adicionar', data={'nome': 'Arroz 5kg', 'preco': '25.0'})
     client.post('/desconto', data={'percentual': '10'})
