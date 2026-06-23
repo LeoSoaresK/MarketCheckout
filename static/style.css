@@ -81,6 +81,17 @@ h2 {
     top: 2rem;
 }
 
+.recibo {
+    font-family: 'Courier New', Courier, monospace;
+    white-space: pre-wrap;
+    background-color: #f8f9fa;
+    border: 1px dashed #bdc3c7;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
 .lista-cupom {
     list-style: none;
     padding: 0;

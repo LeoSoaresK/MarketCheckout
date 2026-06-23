@@ -43,7 +43,11 @@
             <h2>Cupom Fiscal</h2>
             <div class="cupom">
                 {% if not carrinho %}
-                    <p class="vazio">Caixa livre. Passe um produto.</p>
+                    {% if recibo %}
+                        <pre class="recibo">{{ recibo }}</pre>
+                    {% else %}
+                        <p class="vazio">Caixa livre. Passe um produto.</p>
+                    {% endif %}
                 {% else %}
                     <ul class="lista-cupom">
                         {% for item in carrinho %}
