@@ -81,3 +81,14 @@ def test_desconto_invalido_mostra_erro(client):
 
     assert app_module.desconto_atual == 0.0
     assert "Desconto deve ser entre 0 e 100" in resposta.get_data(as_text=True)
+
+
+def test_limpar_esvazia_carrinho_e_reseta_desconto(client):
+    client.post('/adicionar', data={'nome': 'Arroz 5kg', 'preco': '25.0'})
+    client.post('/desconto', data={'percentual': '10'})
+
+    client.post('/limpar')
+
+    assert app_module.carrinho_atual == []
+    assert app_module.desconto_atual == 0.0
+    assert app_module.ultimo_recibo is None
