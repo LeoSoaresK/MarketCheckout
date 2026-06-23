@@ -50,3 +50,17 @@ def test_pagar_baixa_estoque_dos_itens_comprados(client):
 
     assert app_module.estoque_atual['Arroz 5kg'] == 8
     assert app_module.carrinho_atual == []
+
+
+def test_remover_item_existente_no_carrinho(client):
+    client.post('/adicionar', data={'nome': 'Arroz 5kg', 'preco': '25.0'})
+
+    client.post('/remover', data={'nome': 'Arroz 5kg'})
+
+    assert app_module.carrinho_atual == []
+
+
+def test_remover_item_inexistente_mostra_erro(client):
+    resposta = client.post('/remover', data={'nome': 'Arroz 5kg'}, follow_redirects=True)
+
+    assert "Item nao encontrado" in resposta.get_data(as_text=True)
