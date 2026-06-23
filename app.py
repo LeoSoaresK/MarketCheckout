@@ -16,6 +16,13 @@ PRODUTOS_MERCADO = [
 carrinho_atual = []
 desconto_atual = 0.0
 ultimo_recibo = None
+estoque_atual = {
+    "Arroz 5kg": 10,
+    "Feijão 1kg": 10,
+    "Crunchy Garlic S&B": 5,
+    "Kit Pratos 12 Peças": 3,
+    "Corda de Guitarra 0.9": 8
+}
 
 @app.route('/')
 def index():
