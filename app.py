@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import secrets
-from src.carrinho import calcular_total, adicionar_item, remover_item, aplicar_desconto, limpar_carrinho, processar_pagamento, gerar_recibo, consultar_estoque, buscar_item
+from src.carrinho import calcular_total, adicionar_item, remover_item, aplicar_desconto, limpar_carrinho, processar_pagamento, gerar_recibo, consultar_estoque, buscar_item, baixar_estoque
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -92,6 +92,8 @@ def pagar():
     try:
         # Usa a função do nosso TDD!
         troco = processar_pagamento(total, valor_pago)
+        for item in carrinho_atual:
+            baixar_estoque(estoque_atual, item["nome"], item["quantidade"])
         ultimo_recibo = gerar_recibo(carrinho_atual)
         limpar_carrinho(carrinho_atual)
         desconto_atual = 0.0
