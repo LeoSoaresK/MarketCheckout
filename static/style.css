@@ -89,11 +89,27 @@ h2 {
 
 .lista-cupom li {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: 0.5rem;
     padding: 0.5rem 0;
     border-bottom: 1px dashed #ecf0f1;
     font-size: 0.95rem;
 }
+
+.form-remover { margin: 0; }
+
+.btn-remover {
+    background-color: transparent;
+    color: #e74c3c;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0.2rem 0.4rem;
+}
+.btn-remover:hover { color: #c0392b; }
 
 .total-box h3 {
     display: flex;

@@ -50,6 +50,10 @@
                         <li>
                             <span>{{ item.quantidade }}x {{ item.nome }}</span>
                             <span>R$ {{ "%.2f"|format(item.preco * item.quantidade) }}</span>
+                            <form action="/remover" method="POST" class="form-remover">
+                                <input type="hidden" name="nome" value="{{ item.nome }}">
+                                <button type="submit" class="btn-remover" title="Remover item">✕</button>
+                            </form>
                         </li>
                         {% endfor %}
                     </ul>
