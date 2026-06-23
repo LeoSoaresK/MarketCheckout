@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import secrets
-from src.carrinho import calcular_total, adicionar_item, remover_item, aplicar_desconto, limpar_carrinho, processar_pagamento
+from src.carrinho import calcular_total, adicionar_item, remover_item, aplicar_desconto, limpar_carrinho, processar_pagamento, gerar_recibo
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -15,6 +15,7 @@ PRODUTOS_MERCADO = [
 
 carrinho_atual = []
 desconto_atual = 0.0
+ultimo_recibo = None
 
 @app.route('/')
 def index():
@@ -22,14 +23,16 @@ def index():
     total = aplicar_desconto(subtotal, desconto_atual)
     return render_template(
         'index.html', produtos=PRODUTOS_MERCADO, carrinho=carrinho_atual,
-        subtotal=subtotal, desconto=desconto_atual, total=total
+        subtotal=subtotal, desconto=desconto_atual, total=total, recibo=ultimo_recibo
     )
 
 @app.route('/adicionar', methods=['POST'])
 def adicionar():
+    global ultimo_recibo
     nome = request.form.get('nome')
     preco = float(request.form.get('preco'))
     adicionar_item(carrinho_atual, {"nome": nome, "preco": preco, "quantidade": 1})
+    ultimo_recibo = None
     return redirect(url_for('index'))
 
 @app.route('/remover', methods=['POST'])
@@ -56,7 +59,7 @@ def desconto():
 
 @app.route('/pagar', methods=['POST'])
 def pagar():
-    global desconto_atual
+    global desconto_atual, ultimo_recibo
     valor_pago_str = request.form.get('valor_pago')
     if not valor_pago_str:
         flash("Por favor, informe o valor pago.", "erro")
@@ -69,6 +72,7 @@ def pagar():
     try:
         # Usa a função do nosso TDD!
         troco = processar_pagamento(total, valor_pago)
+        ultimo_recibo = gerar_recibo(carrinho_atual)
         limpar_carrinho(carrinho_atual)
         desconto_atual = 0.0
         flash(f"Compra finalizada com sucesso! Troco: R$ {troco:.2f}", "sucesso")
@@ -80,9 +84,10 @@ def pagar():
 
 @app.route('/limpar', methods=['POST'])
 def limpar():
-    global desconto_atual
+    global desconto_atual, ultimo_recibo
     limpar_carrinho(carrinho_atual)
     desconto_atual = 0.0
+    ultimo_recibo = None
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
