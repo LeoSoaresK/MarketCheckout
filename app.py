@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import secrets
-from src.carrinho import calcular_total, adicionar_item, remover_item, aplicar_desconto, limpar_carrinho, processar_pagamento, gerar_recibo
+from src.carrinho import calcular_total, adicionar_item, remover_item, aplicar_desconto, limpar_carrinho, processar_pagamento, gerar_recibo, consultar_estoque
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -28,8 +28,12 @@ estoque_atual = {
 def index():
     subtotal = calcular_total(carrinho_atual)
     total = aplicar_desconto(subtotal, desconto_atual)
+    produtos_com_estoque = [
+        {**produto, "estoque": consultar_estoque(estoque_atual, produto["nome"])}
+        for produto in PRODUTOS_MERCADO
+    ]
     return render_template(
-        'index.html', produtos=PRODUTOS_MERCADO, carrinho=carrinho_atual,
+        'index.html', produtos=produtos_com_estoque, carrinho=carrinho_atual,
         subtotal=subtotal, desconto=desconto_atual, total=total, recibo=ultimo_recibo
     )
 
