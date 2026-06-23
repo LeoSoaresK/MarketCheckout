@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import secrets
-from src.carrinho import calcular_total, adicionar_item, remover_item, limpar_carrinho, processar_pagamento
+from src.carrinho import calcular_total, adicionar_item, remover_item, aplicar_desconto, limpar_carrinho, processar_pagamento
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -14,11 +14,16 @@ PRODUTOS_MERCADO = [
 ]
 
 carrinho_atual = []
+desconto_atual = 0.0
 
 @app.route('/')
 def index():
-    total = calcular_total(carrinho_atual)
-    return render_template('index.html', produtos=PRODUTOS_MERCADO, carrinho=carrinho_atual, total=total)
+    subtotal = calcular_total(carrinho_atual)
+    total = aplicar_desconto(subtotal, desconto_atual)
+    return render_template(
+        'index.html', produtos=PRODUTOS_MERCADO, carrinho=carrinho_atual,
+        subtotal=subtotal, desconto=desconto_atual, total=total
+    )
 
 @app.route('/adicionar', methods=['POST'])
 def adicionar():
@@ -36,30 +41,48 @@ def remover():
         flash(str(e), "erro")
     return redirect(url_for('index'))
 
+@app.route('/desconto', methods=['POST'])
+def desconto():
+    global desconto_atual
+    percentual_str = request.form.get('percentual')
+    try:
+        percentual = float(percentual_str)
+        aplicar_desconto(100.0, percentual)  # valida o percentual antes de gravar
+        desconto_atual = percentual
+        flash(f"Desconto de {percentual:.0f}% aplicado!", "sucesso")
+    except (TypeError, ValueError) as e:
+        flash(str(e) or "Percentual de desconto inválido.", "erro")
+    return redirect(url_for('index'))
+
 @app.route('/pagar', methods=['POST'])
 def pagar():
+    global desconto_atual
     valor_pago_str = request.form.get('valor_pago')
     if not valor_pago_str:
         flash("Por favor, informe o valor pago.", "erro")
         return redirect(url_for('index'))
-    
+
     valor_pago = float(valor_pago_str)
-    total = calcular_total(carrinho_atual)
-    
+    subtotal = calcular_total(carrinho_atual)
+    total = aplicar_desconto(subtotal, desconto_atual)
+
     try:
         # Usa a função do nosso TDD!
         troco = processar_pagamento(total, valor_pago)
         limpar_carrinho(carrinho_atual)
+        desconto_atual = 0.0
         flash(f"Compra finalizada com sucesso! Troco: R$ {troco:.2f}", "sucesso")
     except ValueError as e:
         # Captura os erros que programamos (ex: valor negativo, insuficiente)
         flash(str(e), "erro")
-        
+
     return redirect(url_for('index'))
 
 @app.route('/limpar', methods=['POST'])
 def limpar():
+    global desconto_atual
     limpar_carrinho(carrinho_atual)
+    desconto_atual = 0.0
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
