@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import secrets
-from src.carrinho import calcular_total, adicionar_item, remover_item, aplicar_desconto, limpar_carrinho, processar_pagamento, gerar_recibo, consultar_estoque
+from src.carrinho import calcular_total, adicionar_item, remover_item, aplicar_desconto, limpar_carrinho, processar_pagamento, gerar_recibo, consultar_estoque, buscar_item
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -42,6 +42,15 @@ def adicionar():
     global ultimo_recibo
     nome = request.form.get('nome')
     preco = float(request.form.get('preco'))
+
+    item_no_carrinho = buscar_item(carrinho_atual, nome)
+    quantidade_no_carrinho = item_no_carrinho["quantidade"] if item_no_carrinho else 0
+    disponivel = consultar_estoque(estoque_atual, nome)
+
+    if quantidade_no_carrinho + 1 > disponivel:
+        flash(f"Estoque insuficiente de {nome}.", "erro")
+        return redirect(url_for('index'))
+
     adicionar_item(carrinho_atual, {"nome": nome, "preco": preco, "quantidade": 1})
     ultimo_recibo = None
     return redirect(url_for('index'))
