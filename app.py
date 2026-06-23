@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import secrets
-from src.carrinho import calcular_total, adicionar_item, remover_item, aplicar_desconto, limpar_carrinho, processar_pagamento, gerar_recibo, consultar_estoque, buscar_item, baixar_estoque
+from src.carrinho import calcular_total, adicionar_item, remover_item, aplicar_desconto, limpar_carrinho, processar_pagamento, gerar_recibo, consultar_estoque, buscar_item, baixar_estoque, repor_estoque
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -102,6 +102,18 @@ def pagar():
         # Captura os erros que programamos (ex: valor negativo, insuficiente)
         flash(str(e), "erro")
 
+    return redirect(url_for('index'))
+
+@app.route('/repor', methods=['POST'])
+def repor():
+    nome = request.form.get('nome')
+    quantidade_str = request.form.get('quantidade')
+    try:
+        quantidade = int(quantidade_str)
+        repor_estoque(estoque_atual, nome, quantidade)
+        flash(f"Estoque de {nome} reposto em {quantidade} unidades.", "sucesso")
+    except (TypeError, ValueError) as e:
+        flash(str(e) or "Quantidade de reposição inválida.", "erro")
     return redirect(url_for('index'))
 
 @app.route('/limpar', methods=['POST'])
