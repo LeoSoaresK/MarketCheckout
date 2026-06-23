@@ -26,6 +26,16 @@ def test_index_retorna_200(client):
     assert resposta.status_code == 200
 
 
+def test_index_desabilita_botao_de_produto_sem_estoque(client):
+    app_module.estoque_atual['Kit Pratos 12 Peças'] = 0
+
+    resposta = client.get('/')
+    html = resposta.get_data(as_text=True)
+
+    assert "Sem estoque" in html
+    assert "disabled" in html
+
+
 def test_adicionar_item_com_estoque_disponivel(client):
     client.post('/adicionar', data={'nome': 'Arroz 5kg', 'preco': '25.0'})
     assert app_module.carrinho_atual[0]['nome'] == 'Arroz 5kg'

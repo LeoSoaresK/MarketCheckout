@@ -33,7 +33,9 @@
                     <form action="/adicionar" method="POST">
                         <input type="hidden" name="nome" value="{{ produto.nome }}">
                         <input type="hidden" name="preco" value="{{ produto.preco }}">
-                        <button type="submit" class="btn-add">Adicionar</button>
+                        <button type="submit" class="btn-add" {% if produto.estoque <= 0 %}disabled{% endif %}>
+                            {% if produto.estoque <= 0 %}Sem estoque{% else %}Adicionar{% endif %}
+                        </button>
                     </form>
                     <form action="/repor" method="POST" class="form-repor">
                         <input type="hidden" name="nome" value="{{ produto.nome }}">
