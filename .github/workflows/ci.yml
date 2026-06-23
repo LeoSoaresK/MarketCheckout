@@ -34,8 +34,8 @@ jobs:
       run: |
         pytest --cov=src --cov-report=xml
 
-    - name: Upload da Cobertura para o Codecov
-      uses: codecov/codecov-action@v4
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: ./coverage.xml
