@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import secrets
-from src.carrinho import calcular_total, adicionar_item, limpar_carrinho, processar_pagamento
+from src.carrinho import calcular_total, adicionar_item, remover_item, limpar_carrinho, processar_pagamento
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -25,6 +25,15 @@ def adicionar():
     nome = request.form.get('nome')
     preco = float(request.form.get('preco'))
     adicionar_item(carrinho_atual, {"nome": nome, "preco": preco, "quantidade": 1})
+    return redirect(url_for('index'))
+
+@app.route('/remover', methods=['POST'])
+def remover():
+    nome = request.form.get('nome')
+    try:
+        remover_item(carrinho_atual, nome)
+    except KeyError as e:
+        flash(str(e), "erro")
     return redirect(url_for('index'))
 
 @app.route('/pagar', methods=['POST'])
