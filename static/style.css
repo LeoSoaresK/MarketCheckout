@@ -56,6 +56,7 @@ h2 {
 .produto-card:hover { transform: translateY(-3px); }
 .nome-produto { font-weight: bold; text-align: center; }
 .preco-produto { color: #27ae60; font-weight: bold; font-size: 1.1rem; }
+.estoque-produto { color: #7f8c8d; font-size: 0.85rem; }
 
 .btn-add {
     background-color: #3498db;

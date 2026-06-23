@@ -29,6 +29,7 @@
                 <div class="produto-card">
                     <span class="nome-produto">{{ produto.nome }}</span>
                     <span class="preco-produto">R$ {{ "%.2f"|format(produto.preco) }}</span>
+                    <span class="estoque-produto">{{ produto.estoque }} em estoque</span>
                     <form action="/adicionar" method="POST">
                         <input type="hidden" name="nome" value="{{ produto.nome }}">
                         <input type="hidden" name="preco" value="{{ produto.preco }}">
