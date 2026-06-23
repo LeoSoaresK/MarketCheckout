@@ -64,3 +64,20 @@ def test_remover_item_inexistente_mostra_erro(client):
     resposta = client.post('/remover', data={'nome': 'Arroz 5kg'}, follow_redirects=True)
 
     assert "Item nao encontrado" in resposta.get_data(as_text=True)
+
+
+def test_desconto_valido_e_aplicado(client):
+    client.post('/adicionar', data={'nome': 'Arroz 5kg', 'preco': '25.0'})
+
+    client.post('/desconto', data={'percentual': '10'})
+
+    assert app_module.desconto_atual == 10.0
+
+
+def test_desconto_invalido_mostra_erro(client):
+    client.post('/adicionar', data={'nome': 'Arroz 5kg', 'preco': '25.0'})
+
+    resposta = client.post('/desconto', data={'percentual': '150'}, follow_redirects=True)
+
+    assert app_module.desconto_atual == 0.0
+    assert "Desconto deve ser entre 0 e 100" in resposta.get_data(as_text=True)
