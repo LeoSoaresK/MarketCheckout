@@ -35,6 +35,11 @@
                         <input type="hidden" name="preco" value="{{ produto.preco }}">
                         <button type="submit" class="btn-add">Adicionar</button>
                     </form>
+                    <form action="/repor" method="POST" class="form-repor">
+                        <input type="hidden" name="nome" value="{{ produto.nome }}">
+                        <input type="number" name="quantidade" min="1" placeholder="Qtd" required>
+                        <button type="submit" class="btn-repor" title="Repor estoque">+ Estoque</button>
+                    </form>
                 </div>
                 {% endfor %}
             </div>
