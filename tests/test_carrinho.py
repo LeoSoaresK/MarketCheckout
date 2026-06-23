@@ -1,4 +1,5 @@
 import pytest
+
 from src.carrinho import (
     calcular_total, adicionar_item, remover_item, aplicar_desconto,
     processar_pagamento, limpar_carrinho, gerar_recibo, buscar_item,

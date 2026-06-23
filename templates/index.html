@@ -60,7 +60,21 @@
                 {% endif %}
             </div>
             
+            {% if carrinho %}
+            <div class="desconto-box">
+                <form action="/desconto" method="POST" class="form-desconto">
+                    <label for="percentual">Cupom de Desconto (%):</label>
+                    <input type="number" step="1" min="0" max="100" name="percentual" id="percentual" required placeholder="Ex: 10">
+                    <button type="submit" class="btn-desconto">Aplicar</button>
+                </form>
+            </div>
+            {% endif %}
+
             <div class="total-box">
+                {% if desconto %}
+                <p class="subtotal">Subtotal: R$ {{ "%.2f"|format(subtotal) }}</p>
+                <p class="desconto-aplicado">Desconto ({{ desconto|round(0, 'common')|int }}%): -R$ {{ "%.2f"|format(subtotal - total) }}</p>
+                {% endif %}
                 <h3>Total a Pagar: <span>R$ {{ "%.2f"|format(total) }}</span></h3>
             </div>
 

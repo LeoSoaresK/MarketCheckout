@@ -119,6 +119,48 @@ h2 {
     margin: 1.5rem 0;
 }
 
+.total-box .subtotal,
+.total-box .desconto-aplicado {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.2rem 0;
+    font-size: 0.95rem;
+    color: #7f8c8d;
+}
+
+.total-box .desconto-aplicado { color: #27ae60; }
+
+.desconto-box {
+    margin-top: 1rem;
+}
+
+.form-desconto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.form-desconto input {
+    padding: 0.8rem;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.btn-desconto {
+    background-color: #f39c12;
+    color: white;
+    border: none;
+    padding: 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.btn-desconto:hover { background-color: #d4880f; }
+
 /* Formulários de Pagamento */
 .form-pagamento {
     display: flex;
